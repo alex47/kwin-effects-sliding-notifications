@@ -35,5 +35,7 @@ private:
 
     QEasingCurve m_slideInCurve;
     QEasingCurve m_slideOutCurve;
-    int m_slideDuration;
+    
+    int m_slideInDuration;
+    int m_slideOutDuration;
 };

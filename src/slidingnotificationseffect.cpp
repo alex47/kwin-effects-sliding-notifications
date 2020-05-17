@@ -8,10 +8,13 @@
 #include "slidingnotificationsconfig.h"
 
 SlidingNotificationsEffect::SlidingNotificationsEffect()
-    : m_slideInCurve(QEasingCurve::OutCubic)
-    , m_slideOutCurve(QEasingCurve::InCubic)
+    : m_slideInCurve(QEasingCurve::BezierSpline)
+    , m_slideOutCurve(QEasingCurve::BezierSpline)
 {
     reconfigure(ReconfigureAll);
+    
+    m_slideInCurve.addCubicBezierSegment(QPointF(0.1f, 0.9f), QPointF(0.2f, 1.0f), QPointF(1.0f, 1.0f));
+    m_slideOutCurve.addCubicBezierSegment(QPointF(0.7f, 0.0f), QPointF(1.0f, 0.5f), QPointF(1.0f, 1.0f));
 
     connect(effects, &EffectsHandler::windowAdded,
             this, &SlidingNotificationsEffect::slotWindowAdded);
@@ -26,7 +29,8 @@ SlidingNotificationsEffect::~SlidingNotificationsEffect()
 void SlidingNotificationsEffect::reconfigure(ReconfigureFlags)
 {
     SlidingNotificationsConfig::self()->read();
-    m_slideDuration = animationTime<SlidingNotificationsConfig>(500);
+    m_slideInDuration = animationTime<SlidingNotificationsConfig>(500);
+    m_slideOutDuration = animationTime<SlidingNotificationsConfig>(250);
 }
 
 static Qt::Edge slideEdgeForWindow(EffectWindow *window)
@@ -79,9 +83,9 @@ void SlidingNotificationsEffect::slotWindowAdded(EffectWindow *window)
         break;
     }
 
-    animate(window, Translation, 0, m_slideDuration, FPx2(), m_slideInCurve, 0, translationFrom);
-    animate(window, Clip, 0, m_slideDuration, FPx2(1, 1), m_slideInCurve, 0, FPx2(1, 1));
-    animate(window, Opacity, 0, m_slideDuration, FPx2(1, 1), m_slideInCurve, 0, FPx2(0, 0));
+    animate(window, Translation, 0, m_slideInDuration, FPx2(), m_slideInCurve, 0, translationFrom);
+    animate(window, Clip, 0, m_slideInDuration, FPx2(1, 1), m_slideInCurve, 0, FPx2(1, 1));
+    animate(window, Opacity, 0, m_slideInDuration, FPx2(1, 1), m_slideInCurve, 0, FPx2(0, 0));
 }
 
 void SlidingNotificationsEffect::slotWindowClosed(EffectWindow *window)
@@ -115,8 +119,8 @@ void SlidingNotificationsEffect::slotWindowClosed(EffectWindow *window)
         break;
     }
 
-    animate(window, Translation, 0, m_slideDuration, translationTo, m_slideOutCurve);
-    animate(window, Clip, 0, m_slideDuration, FPx2(1, 1), m_slideOutCurve, 0, FPx2(1, 1));
+    animate(window, Translation, 0, m_slideOutDuration, translationTo, m_slideOutCurve);
+    animate(window, Clip, 0, m_slideOutDuration, FPx2(1, 1), m_slideOutCurve, 0, FPx2(1, 1));
 }
 
 void SlidingNotificationsEffect::animationEnded(EffectWindow *window, Attribute, uint)
