@@ -1,6 +1,6 @@
 # Sliding Notifications Effect
 
-This is a simple effect that makes notification windows slide in and out when they are shown or hidden. [Demo](https://youtu.be/6uzv8r8Oqf4)
+This is a simple effect that makes notification windows slide in and out when they are shown or hidden. 
 
 
 #### Building from Git
@@ -43,7 +43,7 @@ After you installed all the required dependencies, you can build
 the effect:
 
 ```sh
-git clone https://github.com/zzag/kwin-effects-sliding-notifications.git
+git clone https://github.com/alex47/kwin-effects-sliding-notifications.git
 cd kwin-effects-sliding-notifications
 mkdir build && cd build
 cmake .. \
